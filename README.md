@@ -128,6 +128,29 @@ DELETE /orders/{id}
 GET /orders?page=0&size=10
 ```
 
+응답 예시
+
+```json
+{
+  "content": [
+    {
+      "orderId": 1,
+      "productId": 5,
+      "productName": "테스트 상품",
+      "quantity": 1
+    }
+  ],
+  "totalElements": 2,
+  "totalPages": 1,
+  "size": 10,
+  "number": 0
+}
+```
+
+### 실행 결과
+
+> Postman 실행 결과 캡처 첨부
+
 ---
 
 # N+1 문제 방지
@@ -141,7 +164,9 @@ Page<ProductOrder> findAll(Pageable pageable);
 
 설명
 
-주문 목록 조회 시 Product 정보를 함께 조회하기 위해 `@EntityGraph(attributePaths = "product")`를 적용하여 N+1 문제를 방지했습니다.
+주문 목록 조회 시 Product 정보를 함께 조회하기 위해 `@EntityGraph(attributePaths = "product")`를 적용하였습니다.
+
+이를 통해 주문 조회 시 Product를 추가 조회하지 않고 함께 조회하여 N+1 문제를 방지하였습니다.
 
 ---
 
@@ -149,20 +174,56 @@ Page<ProductOrder> findAll(Pageable pageable);
 
 상품에 stock 필드를 추가하였습니다.
 
-## 주문 시 재고 차감
+## 재고 차감 테스트
 
-주문 생성 시 주문 수량만큼 재고가 감소합니다.
+재고가 1인 상품을 생성한 후 동일한 주문을 2회 요청하여 재고 차감 동작을 확인하였습니다.
 
-예시
+### 첫 번째 주문
 
-```text
-재고 10
+요청
 
-주문 수량 3
+```json
+{
+  "productId": 5,
+  "quantity": 1
+}
+```
 
 결과
-재고 7
+
+```text
+200 OK
+주문 성공
 ```
+
+### 두 번째 주문
+
+요청
+
+```json
+{
+  "productId": 5,
+  "quantity": 1
+}
+```
+
+결과
+
+```json
+{
+  "message": "재고가 부족합니다."
+}
+```
+
+```text
+400 Bad Request
+```
+
+### 실행 결과
+
+> Postman 실행 결과 캡처 첨부
+
+---
 
 ## 재고 부족 처리
 
@@ -200,7 +261,17 @@ Page<ProductOrder> findAll(Pageable pageable);
 @Transactional
 ```
 
-또한 다중 사용자가 동시에 주문하는 환경에서는 동시성 문제가 발생할 수 있으므로, 실무에서는 Pessimistic Lock 또는 Optimistic Lock을 적용하여 재고 차감의 원자성을 보장할 수 있습니다.
+원자성(Atomic) 보장을 위해 주문 생성과 재고 차감을 하나의 트랜잭션으로 처리하였습니다.
+
+주문 생성 중 예외가 발생할 경우 재고 차감도 함께 롤백되어 데이터 정합성을 유지합니다.
+
+다만 여러 사용자가 동시에 주문하는 환경에서는 동시성 문제가 발생할 수 있으므로, 실무에서는 다음과 같은 방법을 적용할 수 있습니다.
+
+* Pessimistic Lock
+* Optimistic Lock
+* Redis 분산 락
+
+이번 과제에서는 구현 복잡도와 요구사항을 고려하여 `@Transactional` 방식을 선택하였습니다.
 
 ---
 
