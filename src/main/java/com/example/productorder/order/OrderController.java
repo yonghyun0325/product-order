@@ -5,6 +5,8 @@ import com.example.productorder.order.dto.OrderResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import java.util.List;
+import com.example.productorder.order.dto.OrderUpdateRequest;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,5 +37,37 @@ public class OrderController {
             @PathVariable Long id
     ) {
         return orderService.getById(id);
+    }
+    /**
+     * 주문 목록 조회 API
+     *
+     * GET /orders
+     *
+     * @return 전체 주문 목록
+     */
+    @GetMapping
+    public List<OrderResponse> getAll() {
+        return orderService.getAll();
+    }
+    /**
+     * 주문 수정 API
+     *
+     * PUT /orders/{id}
+     */
+    @PutMapping("/{id}")
+    public OrderResponse update(
+            @PathVariable Long id,
+            @RequestBody @Valid OrderUpdateRequest request
+    ) {
+        return orderService.update(id, request);
+    }
+    /**
+     * 주문 삭제 API
+     *
+     * DELETE /orders/{id}
+     */
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        orderService.delete(id);
     }
 }

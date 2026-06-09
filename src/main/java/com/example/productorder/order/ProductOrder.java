@@ -43,4 +43,12 @@ public class ProductOrder {
         this.product = product;
         this.quantity = quantity;
     }
+    /**
+     * 주문 수량 수정
+     *
+     * @param quantity 변경할 수량
+     */
+    public void updateQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 }
