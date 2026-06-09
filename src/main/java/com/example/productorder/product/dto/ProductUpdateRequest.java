@@ -16,7 +16,10 @@ public record ProductUpdateRequest(
 
         @NotNull
         @DecimalMin("0.0")
-        BigDecimal price
+        BigDecimal price,
+
+        @NotNull
+        Integer stock
 
 ) {
 }

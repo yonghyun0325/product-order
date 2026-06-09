@@ -36,6 +36,8 @@ public class Product {
     @Column(nullable = false)
     private String name;
 
+    private Integer stock;
+
     /**
      * 상품 가격
      *
@@ -50,26 +52,34 @@ public class Product {
      */
     @Column(nullable = false, precision = 15, scale = 2)
     private BigDecimal price;
-
     /**
      * 상품 생성 생성자
      *
      * @param name 상품명
      * @param price 상품 가격
      */
-    public Product(String name, BigDecimal price) {
+    public Product(String name, BigDecimal price, Integer stock) {
         this.name = name;
         this.price = price;
+        this.stock = stock;
     }
-
     /**
      * 상품 정보 수정
      *
      * @param name 변경할 상품명
      * @param price 변경할 가격
      */
-    public void update(String name, BigDecimal price) {
+    public void update(String name, BigDecimal price, Integer stock) {
         this.name = name;
         this.price = price;
+        this.stock = stock;
+    }
+    /**
+     * 상품 재고 수정
+     *
+     * @param stock 변경할 재고 수량
+     */
+    public void updateStock(Integer stock) {
+        this.stock = stock;
     }
 }

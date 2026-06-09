@@ -22,7 +22,10 @@ public record ProductCreateRequest(
 
         @NotNull
         @DecimalMin("0.0")
-        BigDecimal price
+        BigDecimal price,
+
+        @NotNull
+        Integer stock
 
 ) {
 }
