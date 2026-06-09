@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import com.example.productorder.order.dto.OrderUpdateRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequiredArgsConstructor
@@ -41,13 +43,14 @@ public class OrderController {
     /**
      * 주문 목록 조회 API
      *
-     * GET /orders
+     * GET /orders?page=0&size=10
      *
-     * @return 전체 주문 목록
+     * @param pageable 페이지 정보
+     * @return 주문 목록 페이지
      */
     @GetMapping
-    public List<OrderResponse> getAll() {
-        return orderService.getAll();
+    public Page<OrderResponse> getAll(Pageable pageable) {
+        return orderService.getAll(pageable);
     }
     /**
      * 주문 수정 API

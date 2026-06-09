@@ -10,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import com.example.productorder.order.dto.OrderUpdateRequest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 @RequiredArgsConstructor
@@ -71,20 +73,21 @@ public class OrderService {
         );
     }
     /**
-     * 전체 주문 목록을 조회한다.
+     * 주문 목록을 페이지네이션으로 조회한다.
      *
-     * @return 주문 응답 목록
+     * Product를 함께 조회하여 주문 목록 응답에 상품명을 포함한다.
+     *
+     * @param pageable 페이지 정보
+     * @return 주문 응답 페이지
      */
-    public List<OrderResponse> getAll() {
-        return orderRepository.findAll()
-                .stream()
+    public Page<OrderResponse> getAll(Pageable pageable) {
+        return orderRepository.findAll(pageable)
                 .map(order -> new OrderResponse(
                         order.getId(),
                         order.getProduct().getId(),
                         order.getProduct().getName(),
                         order.getQuantity()
-                ))
-                .toList();
+                ));
     }
     /**
      * 주문 수량을 수정한다.
