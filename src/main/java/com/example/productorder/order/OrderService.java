@@ -4,6 +4,8 @@ import com.example.productorder.order.dto.OrderCreateRequest;
 import com.example.productorder.order.dto.OrderResponse;
 import com.example.productorder.product.Product;
 import com.example.productorder.product.ProductRepository;
+import com.example.productorder.product.StockService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
@@ -11,10 +13,12 @@ import com.example.productorder.order.dto.OrderUpdateRequest;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class OrderService {
 
     private final OrderRepository orderRepository;
     private final ProductRepository productRepository;
+    private final StockService stockService;
 
     /**
      * 주문을 생성한다.
@@ -24,22 +28,21 @@ public class OrderService {
      */
     public OrderResponse create(OrderCreateRequest request) {
 
-        // 요청으로 전달받은 상품 ID로 상품 조회
         Product product = productRepository.findById(request.productId())
                 .orElseThrow(() -> new IllegalArgumentException(
                         "상품을 찾을 수 없습니다. id=" + request.productId()
                 ));
 
-        // 주문 엔티티 생성
+        // 주문 수량만큼 재고 차감
+        stockService.decrease(product, request.quantity());
+
         ProductOrder productOrder = new ProductOrder(
                 product,
                 request.quantity()
         );
 
-        // 주문 저장
         ProductOrder savedOrder = orderRepository.save(productOrder);
 
-        // Entity -> Response DTO 변환
         return new OrderResponse(
                 savedOrder.getId(),
                 savedOrder.getProduct().getId(),

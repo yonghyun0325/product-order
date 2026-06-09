@@ -17,7 +17,8 @@ public class ProductService {
 
         Product product = new Product(
                 request.name(),
-                request.price()
+                request.price(),
+                request.stock()
         );
 
         Product savedProduct = productRepository.save(product);
@@ -25,7 +26,8 @@ public class ProductService {
         return new ProductResponse(
                 savedProduct.getId(),
                 savedProduct.getName(),
-                savedProduct.getPrice()
+                savedProduct.getPrice(),
+                savedProduct.getStock()
         );
     }
 
@@ -50,7 +52,8 @@ public class ProductService {
         return new ProductResponse(
                 product.getId(),
                 product.getName(),
-                product.getPrice()
+                product.getPrice(),
+                product.getStock()
         );
     }
     /**
@@ -64,7 +67,8 @@ public class ProductService {
                 .map(product -> new ProductResponse(
                         product.getId(),
                         product.getName(),
-                        product.getPrice()
+                        product.getPrice(),
+                        product.getStock()
                 ))
                 .toList();
     }
@@ -79,14 +83,15 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("상품을 찾을 수 없습니다. id=" + id));
 
-        product.update(request.name(), request.price());
+        product.update(request.name(), request.price(), request.stock());
 
         Product savedProduct = productRepository.save(product);
 
         return new ProductResponse(
                 savedProduct.getId(),
                 savedProduct.getName(),
-                savedProduct.getPrice()
+                savedProduct.getPrice(),
+                savedProduct.getStock()
         );
     }
     /**
